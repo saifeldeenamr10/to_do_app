@@ -1,148 +1,99 @@
-# To Do App
+# ✅ To-Do Flutter Application
+Flutter · Dart · State Management
 
-A clean, minimal, and user-friendly To Do application for managing tasks quickly and efficiently. This repository contains the source code, setup instructions, and development notes for running, testing, and contributing to the app.
+A professional, feature-focused To‑Do mobile application built with Flutter. This project demonstrates modern mobile development best practices including Clean Architecture, responsive UI, offline-first persistence, and efficient state management.
 
-## Table of contents
-- [About](#about)
-- [Features](#features)
-- [Tech stack](#tech-stack)
-- [Demo](#demo)
-- [Getting started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Running the app](#running-the-app)
-- [Usage](#usage)
-- [Project structure](#project-structure)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+🌟 Features
+- 📝 Task Management: Create, edit, complete, and delete tasks.
+- 🗂️ Categories & Tags: Organize tasks with categories or custom tags.
+- ⏰ Reminders & Notifications: Schedule local reminders for important tasks.
+- 🔎 Search & Filters: Quickly find tasks and filter by status, date, category, or priority.
+- 📅 Due Dates & Recurrence: Set due dates and repeating tasks.
+- 🌙 Dark Mode: Theme support with light/dark modes.
+- 🔄 Sync (Optional): Placeholder for cloud sync or export/import functionality.
+- 👋 Onboarding: Intro flow for first-time users.
+- 👤 Profile & Settings: Manage app settings, notification preferences, and backup options.
 
-## About
-This To Do App provides a lightweight interface to create, edit, complete, and remove tasks. It is designed as a learning project and a starting point for expanding into more advanced task-management features (user accounts, reminders, synchronization, etc.).
+🛠️ Technology Stack
+This project uses a pragmatic set of libraries and tools to ensure maintainability and a great developer experience:
 
-## Features
-- Create, edit, and delete tasks
-- Mark tasks as complete / incomplete
-- Filter tasks by status (all/active/completed)
-- Persistent storage (localStorage / optional backend)
-- Responsive UI for desktop and mobile
+- Framework: Flutter (stable)
+- Language: Dart
+- State Management: flutter_bloc (Cubit pattern) or Provider (depending on the branch)
+- Navigation & Utilities: get or go_router (for routing & helpers)
+- Local Storage: hive or shared_preferences for caching and persistence
+- Notifications: flutter_local_notifications for reminders
+- Networking (optional): dio for any API/sync endpoints
+- Localization: intl for internationalization support
+- UI Helpers:
+  - carousel_slider (if used for on-boarding banners)
+  - flutter_svg for vector assets
 
-## Tech stack
-- Frontend: HTML, CSS, JavaScript (or React / Vue / Svelte - update to match your implementation)
-- Backend: None by default (or Node.js/Express — update if used)
-- Storage: localStorage (or REST API / database if present)
-- Build tools: npm / yarn (if applicable)
+📂 Project Structure
+Feature-first structure to keep code modular, testable, and scalable:
 
-> NOTE: Replace the above technologies with the exact stack used in this repository if different.
+lib/
+├── core/                  # Core utilities shared across the app
+│   ├── cache/             # Local storage logic (Hive / SharedPreferences)
+│   ├── cubit/             # Global or shared Cubits / Blocs
+│   ├── network/           # API client setup (optional)
+│   ├── notifications/     # Local notifications setup
+│   ├── translation/       # Localization files
+│   ├── utils/             # Helper methods and constants
+│   └── widgets/           # Reusable UI components
+├── features/              # Feature-specific code
+│   ├── onboarding/        # App intro screens
+│   ├── tasks/             # Task list, add/edit task, task details
+│   ├── categories/        # Categories and tag management
+│   ├── reminders/         # Reminder scheduling and handling
+│   └── profile/           # Settings and backup/export
+└── main.dart              # Application entry point
 
-## Demo
-Include screenshots or a link to a live demo here (GitHub Pages, Vercel, Netlify, etc.). Example:
-- Live demo: https://your-demo-url
-- Screenshot:
+🚀 Getting Started
+Follow these steps to run the application locally.
 
-## Getting started
+Prerequisites
+- Flutter SDK installed (stable channel)
+- An IDE (VS Code or Android Studio) with Flutter extensions
+- Android Emulator or iOS Simulator (or a physical device)
 
-### Prerequisites
-- Node.js (>= 14) and npm or yarn — only if the project uses a build step.
-- A modern browser.
+Installation
+Clone the repository:
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/saifeldeenamr10/to_do_app.git
-   cd to_do_app
-   ```
-2. Install dependencies (if applicable):
-   ```bash
-   npm install
-   # or
-   yarn
-   ```
+git clone https://github.com/saifeldeenamr10/to_do_app.git
+cd to_do_app
 
-### Running the app
-- If it's a static HTML/JS project, open `index.html` in your browser.
-- If it uses a dev server:
-  ```bash
-  npm start
-  # or
-  yarn start
-  ```
-- For production build (if applicable):
-  ```bash
-  npm run build
-  # or
-  yarn build
-  ```
+Install dependencies:
 
-## Usage
-- Add a new task by entering text in the new task field and pressing Enter (or clicking Add).
-- Edit a task by clicking the edit icon or double-clicking the task text.
-- Mark complete by checking the task checkbox.
-- Remove a task by clicking the delete icon.
-- Use filters to show all, active, or completed tasks.
+flutter pub get
 
-Include any keyboard shortcuts, mobile-specific gestures, or accessibility features your app supports.
+Run the application:
 
-## Project structure
-Provide a short summary of the repository layout (update to match actual structure):
-```
-/ (project root)
-├─ public/                # static files (if applicable)
-├─ src/                   # source code
-│  ├─ components/         # UI components
-│  ├─ styles/             # CSS / Sass
-│  └─ index.js            # app entrypoint
-├─ tests/                 # unit / integration tests
-├─ package.json
-└─ README.md
-```
+flutter run
 
-## Testing
-- Run unit tests:
-  ```bash
-  npm test
-  # or
-  yarn test
-  ```
-- Add details about test frameworks (Jest, Mocha, Cypress, etc.) and how to run integration/end-to-end tests.
+📸 Screenshots
+Include screenshots in assets/screenshots (example placeholders):
+- Onboarding
+- Task List (Home)
+- Add / Edit Task
+- Task Details / Reminder Dialog
+- Settings / Profile
 
-## Deployment
-- Static site: Deploy build output or `index.html` to GitHub Pages, Netlify, or Vercel.
-- Backend: Provide environment variables and hosting guidance if a server is used.
+(Replace placeholders with real images in assets/screenshots and reference them in the README)
 
-Example: Deploy to GitHub Pages
-```bash
-npm run build
-# then push the build output to gh-pages branch (or configure GitHub Pages)
-```
+🤝 Contributing
+Contributions are what make the open-source community great. Any contributions you make are greatly appreciated.
 
-## Contributing
-Contributions are welcome — please follow these steps:
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feat/your-feature`.
-3. Commit your changes: `git commit -m "Add some feature"`.
-4. Push to the branch: `git push origin feat/your-feature`.
-5. Open a Pull Request describing your changes.
+1. Fork the project
+2. Create your feature branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m "Add some AmazingFeature")
+4. Push to the branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
 
-Add guidelines for code style, linting, tests, and PR requirements if you have them.
+Please follow conventional commits and add tests for new features where applicable.
 
-## License
-Specify the project license here (e.g., MIT). If you don't have one yet, consider adding a LICENSE file.
+📄 License
+Distributed under the MIT License. See LICENSE for more information.
 
-Example:
-```
-MIT © 2026 Saifeldeen Amr
-```
-
-## Contact
-For questions or feedback, open an issue or contact:
-- GitHub: [saifeldeenamr10](https://github.com/saifeldeenamr10)
-
----
-
-If you'd like, I can:
-- Insert this README into the repository for you,
-- Add badges (build, license, coverage), or
-- Customize sections to match the exact stack, commands, and screenshots used in your project. Which would you like next?
+📧 Contact
+Project Link: https://github.com/saifeldeenamr10/to_do_app
