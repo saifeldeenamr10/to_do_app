@@ -66,11 +66,9 @@ abstract class HomeAppBar {
                       Text(
                         state is UserLoadingState
                             ? ''
-                            : state is UserDataSuccessState &&
-                                    state.userModel.imagePath != null
-                                ? state.userModel.username!
-                                : TranslationKeys
-                                    .adventurer.tr, // Replaced string
+                            : state is UserDataSuccessState
+                                ? state.userModel.username ?? ''
+                                : TranslationKeys.adventurer.tr,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w300,

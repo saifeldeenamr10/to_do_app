@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
     GetHelper.push(() => const TodayTasksPage());
   }
 
-  void _onTaskTapped(BuildContext context, int id) async {
+  void _onTaskTapped(BuildContext context, String id) async {
     await GetHelper.push(() => EditTaskPage(id: id));
     // Refresh tasks after returning from edit screen
     if (context.mounted) {
@@ -166,7 +166,7 @@ class HomePage extends StatelessWidget {
                   itemBuilder: (_, index) {
                     return InProgressTaskCard(
                       taskModel: inProgressTasks[index],
-                      onTapped: (int id) => _onTaskTapped(context, id),
+                      onTapped: (String id) => _onTaskTapped(context, id),
                     );
                   },
                 ),

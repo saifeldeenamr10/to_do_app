@@ -10,7 +10,7 @@ class InProgressTaskCard extends StatelessWidget {
   final TaskModel taskModel;
   final double width = 230;
   final double height = 90;
-  final void Function(int id)? onTapped;
+  final void Function(String id)? onTapped;
 
   @override
   Widget build(BuildContext context) {

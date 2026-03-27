@@ -1,223 +1,136 @@
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../core/network/api_helper.dart';
-import '../../../../core/network/api_response.dart';
-import '../../../../core/network/end_points.dart';
-
+import '../../../../core/constants/firebase_constants.dart';
+import '../../../../core/services/firebase_auth_service.dart';
+import '../../../../core/services/firestore_service.dart';
+import '../../../../core/services/firebase_storage_service.dart';
 import '../../../../core/cache/cache_helper.dart';
 import '../../../../core/cache/cache_keys.dart';
-import '../../../../core/network/api_keys.dart';
 import '../models/user_model.dart';
 import '../../../../core/cache/cache_data.dart';
 
 class UserRepo {
   UserRepo._internal();
-
   static final UserRepo _instance = UserRepo._internal();
+  factory UserRepo() => _instance;
 
-  factory UserRepo() {
-    return _instance;
-  }
+  final FirebaseAuthService _authService = FirebaseAuthService();
+  final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseStorageService _storageService = FirebaseStorageService();
 
-  ApiHelper apiHelper = ApiHelper();
-
-  Future<Either<String, void>> register(
-    String username,
-    String password,
+  Future<Either<String, UserModel>> register({
+    required String username,
+    required String email,
+    required String password,
     XFile? image,
-  ) async {
+  }) async {
     try {
-      await apiHelper.postRequest(
-        endPoint: EndPoints.register,
-        data: {
-          'username': username,
-          'password': password,
-          'image':
-              image != null ? await MultipartFile.fromFile(image.path) : null,
-        },
+      // 1. Create User in Auth
+      final credential = await _authService.signUp(
+        email: email,
+        password: password,
       );
-      return const Right(null);
+
+      if (credential?.user != null) {
+        String? imageUrl;
+        // 2. Upload Image if exists
+        if (image != null) {
+          imageUrl = await _storageService.uploadImage(
+            path: 'profile_images/${credential!.user!.uid}',
+            file: image,
+          );
+        }
+
+        // 3. Create User in Firestore
+        final userModel = UserModel(
+          id: credential!.user!.uid,
+          username: username,
+          email: email,
+          imagePath: imageUrl,
+        );
+
+        await _firestoreService.setDocument(
+          collection: FirebaseConstants.usersCollection,
+          docId: userModel.id!,
+          data: userModel.toMap(),
+        );
+
+        // Cache user model for persistence
+        await CacheHelper.saveData(
+          key: CacheKeys.userModel,
+          value: userModel.toJson().toString(),
+        );
+        CacheData.userModel = userModel;
+        return Right(userModel);
+      }
+      return const Left('Failed to create user');
     } catch (e) {
-      ApiResponse response = ApiResponse.fromError(e);
-      return Left(response.message);
+      return Left(e.toString());
     }
   }
 
   Future<Either<String, UserModel>> login({
-    required String username,
+    required String email,
     required String password,
   }) async {
     try {
-      // First check if we can reach the API
-      try {
-        var response = await apiHelper.postRequest(
-          endPoint: EndPoints.login,
-          data: {
-            'username': username,
-            'password': password,
-          },
+      // 1. Auth Login
+      final credential = await _authService.login(
+        email: email,
+        password: password,
+      );
+
+      if (credential?.user != null) {
+        // 2. Fetch User Data from Firestore
+        final doc = await _firestoreService.getDocument(
+          collection: FirebaseConstants.usersCollection,
+          docId: credential!.user!.uid,
         );
 
-        if (response.status) {
-          // Save tokens
-          if (response.data['access_token'] != null) {
-            await CacheHelper.saveData(
-              key: CacheKeys.accessToken,
-              value: response.data['access_token'],
-            );
-            CacheData.accessToken = response.data['access_token'];
-          } else {
-            return const Left('Access token not received from server');
-          }
+        if (doc.exists) {
+          final userModel = UserModel.fromMap(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          );
 
-          if (response.data['refresh_token'] != null) {
-            await CacheHelper.saveData(
-              key: CacheKeys.refreshToken,
-              value: response.data['refresh_token'],
-            );
-            CacheData.refreshToken = response.data['refresh_token'];
-          } else {
-            return const Left('Refresh token not received from server');
-          }
+          // 3. Cache User Data
+          await CacheHelper.saveData(
+            key: CacheKeys.userModel,
+            value: userModel.toJson().toString(),
+          );
+          await CacheHelper.saveData(key: CacheKeys.loggedIn, value: true);
+          CacheData.userModel = userModel;
 
-          // Create user model
-          if (response.data['user'] != null) {
-            UserModel userModel = UserModel.fromJson(response.data['user']);
-            // Save user model to cache
-            await CacheHelper.saveData(
-              key: CacheKeys.userModel,
-              value: userModel.toJson().toString(),
-            );
-            CacheData.userModel = userModel;
-            return Right(userModel);
-          } else {
-            return const Left('User data not received from server');
-          }
-        } else {
-          return Left(response.message);
+          return Right(userModel);
         }
-      } on DioException catch (e) {
-        if (e.type == DioExceptionType.connectionTimeout ||
-            e.type == DioExceptionType.sendTimeout ||
-            e.type == DioExceptionType.receiveTimeout ||
-            e.type == DioExceptionType.connectionError) {
-          return const Left(
-              'Unable to connect to the server. Please check your internet connection and try again.');
-        }
-        if (e.response?.statusCode == 401) {
-          return const Left('Invalid username or password');
-        }
-        if (e.response?.statusCode == 404) {
-          return const Left('API endpoint not found. Please contact support.');
-        }
-        return Left(e.message ?? 'An error occurred during login');
+        return const Left('User data not found in database');
       }
+      return const Left('Login failed');
     } catch (e) {
-      ApiResponse apiResponse = ApiResponse.fromError(e);
-      return Left(apiResponse.message);
+      return Left(e.toString());
     }
   }
 
-  Future<Either<String, UserModel>> getUserData() async {
-    try {
-      Response response = await apiHelper.getRequest(
-        endPoint: EndPoints.getUserData,
-        isProtected: true,
-      );
-      UserModel userModel = UserModel.fromJson(response.data['user']);
-      return Right(userModel);
-    } catch (e) {
-      ApiResponse response = ApiResponse.fromError(e);
-      return Left(response.message);
-    }
-  }
-
-  Future<Either<String, String>> updateProfile(
-    String newUsername,
-    XFile? newImage,
-  ) async {
-    try {
-      Response response = await apiHelper.putRequest(
-        endPoint: EndPoints.updateProfile,
-        data: {
-          ApiKeys.username: newUsername,
-          ApiKeys.image: newImage != null
-              ? await MultipartFile.fromFile(newImage.path)
-              : null,
-        },
-        isProtected: true,
-      );
-      ApiResponse responseModel = ApiResponse.fromResponse(response);
-      if (responseModel.status) {
-        return Right(responseModel.message);
-      } else {
-        throw Exception(responseModel.message);
-      }
-    } catch (e) {
-      ApiResponse response = ApiResponse.fromError(e);
-      return Left(response.message);
-    }
+  Future<void> logout() async {
+    await _authService.signOut();
+    await CacheHelper.removeData(key: CacheKeys.userModel);
+    await CacheHelper.removeData(key: CacheKeys.loggedIn);
+    CacheData.userModel = null;
   }
 
   Future<Either<String, String>> changePassword(
-    String currentPassword,
+    String oldPassword,
     String newPassword,
     String confirmPassword,
   ) async {
     try {
-      ApiResponse response = await apiHelper.postRequest(
-        endPoint: EndPoints.changePassword,
-        data: {
-          ApiKeys.currentPassword: currentPassword,
-          ApiKeys.newPassword: newPassword,
-          ApiKeys.newPasswordConfirm: confirmPassword,
-        },
-        isProtected: true,
-      );
+      final user = _authService.currentUser;
+      if (user == null) return const Left('User not logged in');
 
-      if (response.status) {
-        return Right(response.message);
-      } else {
-        throw Exception(response.message);
-      }
+      // Re-authenticate if necessary or just update (Firebase might throw error if long time)
+      await user.updatePassword(newPassword);
+      return const Right('Password updated successfully');
     } catch (e) {
-      ApiResponse response = ApiResponse.fromError(e);
-      return Left(response.message);
-    }
-  }
-
-  Future<Either<String, String>> refreshToken() async {
-    try {
-      final refreshToken =
-          await CacheHelper.getData(key: CacheKeys.refreshToken);
-      if (refreshToken == null) {
-        return const Left('No refresh token available');
-      }
-
-      ApiResponse response = await apiHelper.postRequest(
-        endPoint: EndPoints.refreshToken,
-        sendRefreshToken: true,
-      );
-
-      if (response.status) {
-        // Update the access token in cache
-        if (response.data['access_token'] != null) {
-          await CacheHelper.saveData(
-            key: CacheKeys.accessToken,
-            value: response.data['access_token'],
-          );
-        }
-        return const Right('Token refreshed successfully');
-      } else {
-        throw Exception(response.message);
-      }
-    } catch (e) {
-      if (e is DioException) {
-        if (e.response?.data != null && e.response?.data['message'] != null) {
-          return Left(e.response?.data['message']);
-        }
-      }
       return Left(e.toString());
     }
   }

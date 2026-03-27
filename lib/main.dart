@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'core/helper/app_logger.dart';
 import 'core/cache/cache_data.dart';
 import 'core/translation/translation_helper.dart';
@@ -10,9 +11,15 @@ import 'core/utils/app_colors.dart';
 import 'features/home/manager/user_cubit/user_cubit.dart';
 import 'features/onboarding/views/on_boarding_page.dart';
 import 'features/onboarding/views/splash_page.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize cache first
   await CacheHelper.init();

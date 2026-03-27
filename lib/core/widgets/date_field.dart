@@ -13,7 +13,7 @@ class DateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initialDate = DateTime.now().copyWith(day: DateTime.now().day + 1);
+    final initialDate = DateTime.now().add(const Duration(days: 1));
     return Container(
       height: 50,
       decoration: BoxDecoration(
@@ -29,7 +29,7 @@ class DateField extends StatelessWidget {
               context: context,
               initialDate: dateTime ?? initialDate,
               firstDate: DateTime.now(),
-              lastDate: DateTime(2026),
+              lastDate: DateTime(2100),
               builder: (context, child) {
                 return Theme(
                   data: ThemeData.light().copyWith(

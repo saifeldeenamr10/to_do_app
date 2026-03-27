@@ -1,75 +1,65 @@
-class LoginResponseModel {
-  String? accessToken;
-  String? refreshToken;
-  bool? status;
-  UserModel? user;
-
-  LoginResponseModel({
-    this.accessToken,
-    this.refreshToken,
-    this.status,
-    this.user,
-  });
-
-  LoginResponseModel.fromJson(Map<String, dynamic> json) {
-    accessToken = json['access_token'];
-    refreshToken = json['refresh_token'];
-    status = json['status'];
-    user = json['user'] != null ? UserModel.fromJson(json['user']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = {};
-    json['access_token'] = accessToken;
-    json['refresh_token'] = refreshToken;
-    json['status'] = status;
-    if (user != null) {
-      json['user'] = user!.toJson();
-    }
-    return json;
-  }
-}
+import '../../../../core/constants/firebase_constants.dart';
 
 class UserModel {
-  int? id;
+  String? id;
   String? imagePath;
   String? username;
-  String? refreshToken;
+  String? email;
 
   UserModel({
     this.id,
     this.imagePath,
     this.username,
-    this.refreshToken,
+    this.email,
   });
 
-  UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    imagePath = json['image_path'];
-    username = json['username'];
-    refreshToken = json['refresh_token'];
+  factory UserModel.fromMap(Map<String, dynamic> map, String docId) {
+    return UserModel(
+      id: docId,
+      imagePath: map[FirebaseConstants.profileImage],
+      username: map[FirebaseConstants.username],
+      email: map[FirebaseConstants.email],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      FirebaseConstants.username: username,
+      FirebaseConstants.email: email,
+      FirebaseConstants.profileImage: imagePath,
+    };
+  }
+
+  // Legacy support for JSON caching if still used
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id']?.toString(),
+      imagePath: json['image_path'],
+      username: json['username'],
+      email: json['email'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = {};
     data['id'] = id;
     data['image_path'] = imagePath;
     data['username'] = username;
-    data['refresh_token'] = refreshToken;
+    data['email'] = email;
     return data;
   }
 
   UserModel copyWith({
-    int? id,
+    String? id,
     String? imagePath,
     String? username,
-    String? refreshToken,
+    String? email,
   }) {
     return UserModel(
       id: id ?? this.id,
       imagePath: imagePath ?? this.imagePath,
       username: username ?? this.username,
-      refreshToken: refreshToken ?? this.refreshToken,
+      email: email ?? this.email,
     );
   }
 }

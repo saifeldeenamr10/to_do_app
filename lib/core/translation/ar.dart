@@ -20,6 +20,7 @@ Map<String, String> ar = {
   TranslationKeys.welcomeToDoIt: 'مرحبا بك في \nDo it!',
   TranslationKeys.readyToConquer: "جاهز للسيطرة علي مهامك؟ هيان نفعلها سويا!",
   TranslationKeys.Password: "كلمة المرور",
+  TranslationKeys.Email: "البريد الإلكتروني",
   TranslationKeys.ConfirmPassword: "تأكيد كلمة المرور",
   TranslationKeys.Pleaseselectanoption: "رجاءا حدد اختيارا",
   TranslationKeys.Passwordisrequired: "كلمة المرور مطلوبة",

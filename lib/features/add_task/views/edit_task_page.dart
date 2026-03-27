@@ -16,17 +16,16 @@ import 'widgets/edit_task_header.dart';
 
 class EditTaskPage extends StatelessWidget {
   const EditTaskPage({super.key, required this.id});
-  final int id;
+  final String id;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: BlocProvider(
-        create: (context) => EditTaskCubit(),
+        create: (context) => EditTaskCubit()..displayTask(id),
         child: Builder(
           builder: (context) {
             var cubit = BlocProvider.of<EditTaskCubit>(context);
-            cubit.displayTask(id);
             return BlocConsumer<EditTaskCubit, EditTaskState>(
               listener: (context, state) {
                 if (state is EditTaskLoadingState) {

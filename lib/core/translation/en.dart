@@ -25,6 +25,7 @@ Map<String, String> en = {
   TranslationKeys.readyToConquer:
       "Ready to conquer your tasks? Let's Do It together.",
   TranslationKeys.Password: "Password",
+  TranslationKeys.Email: "Email",
   TranslationKeys.ConfirmPassword: "Confirm Password",
   TranslationKeys.Pleaseselectanoption: "Please select an option",
   TranslationKeys.Passwordisrequired: "Password is required",

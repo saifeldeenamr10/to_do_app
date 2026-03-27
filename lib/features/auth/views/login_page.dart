@@ -38,8 +38,8 @@ class LoginPage extends StatelessWidget {
                       child: Column(
                         children: [
                           MyTextFormField(
-                            fieldType: TextFieldType.username,
-                            controller: cubit.usernameController,
+                            fieldType: TextFieldType.email,
+                            controller: cubit.emailController,
                           ),
                           SizedBox(height: 15),
                           BlocBuilder<LoginCubit, LoginState>(

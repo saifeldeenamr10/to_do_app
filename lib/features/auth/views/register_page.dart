@@ -8,9 +8,13 @@ import '../../../core/translation/translation_keys.dart';
 import '../../../core/utils/app_assets.dart';
 import '../../../core/widgets/image_manager/image_manager_view.dart';
 import '../../../core/widgets/my_custom_button.dart';
+import '../../../core/cache/cache_helper.dart';
+import '../../../core/cache/cache_keys.dart';
 import '../../../core/widgets/my_text_form_field.dart';
 import '../manager/register_cubit/register_cubit.dart';
 import '../manager/register_cubit/register_state.dart';
+import '../../home/manager/user_cubit/user_cubit.dart';
+import '../../home/views/home_page.dart';
 import 'login_page.dart';
 import 'widgets/footer.dart';
 
@@ -76,6 +80,11 @@ class RegisterPage extends StatelessWidget {
                             controller: cubit.usernameController,
                           ),
                           SizedBox(height: 15),
+                          MyTextFormField(
+                            fieldType: TextFieldType.email,
+                            controller: cubit.emailController,
+                          ),
+                          SizedBox(height: 15),
                           BlocBuilder<RegisterCubit, RegisterState>(
                             buildWhen: (previous, current) {
                               return current is RegisterShowPassState;
@@ -113,7 +122,13 @@ class RegisterPage extends StatelessWidget {
                                       content: Text(state.errorMessage ?? '')),
                                 );
                               } else if (state is RegisterSuccess) {
-                                GetHelper.pushReplace(() => LoginPage());
+                                // Cache loggedin state
+                                await CacheHelper.saveData(
+                                  key: CacheKeys.loggedIn,
+                                  value: true,
+                                );
+                                UserCubit.get(context).getUser(state.userModel);
+                                GetHelper.pushReplaceAll(() => HomePage());
                               }
                             },
                             builder: (context, state) {

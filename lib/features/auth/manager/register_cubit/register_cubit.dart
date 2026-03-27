@@ -8,6 +8,7 @@ class RegisterCubit extends Cubit<RegisterState> {
   RegisterCubit() : super(RegisterInitial());
 
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
   int? selectedGender = 0;
@@ -41,9 +42,10 @@ class RegisterCubit extends Cubit<RegisterState> {
       }
       // ######## using API #########
       var result = await UserRepo().register(
-        usernameController.text,
-        passwordController.text,
-        imageFile,
+        username: usernameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        image: imageFile,
       );
       result.fold(
         (error) {
@@ -52,7 +54,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         },
         (r) {
           // right
-          emit(RegisterSuccess());
+          emit(RegisterSuccess(userModel: r));
         },
       );
     });

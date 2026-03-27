@@ -44,7 +44,7 @@ class EditTaskCubit extends Cubit<EditTaskState> {
     emit(EditTaskChangeDate());
   }
 
-  void displayTask(int id) {
+  void displayTask(String id) {
     var task = TasksRepo().tasks.firstWhere((element) => element.id == id);
     imagePath = task.imagePath;
     log('task: ${task.title}');
@@ -65,7 +65,7 @@ class EditTaskCubit extends Cubit<EditTaskState> {
     emit(EditTaskDisplayState());
   }
 
-  void editTask(int id) async {
+  void editTask(String id) async {
     emit(EditTaskLoadingState());
 
     if (formKey.currentState!.validate()) {
@@ -100,7 +100,7 @@ class EditTaskCubit extends Cubit<EditTaskState> {
     }
   }
 
-  void deleteTask(int id) async {
+  void deleteTask(String id) async {
     emit(EditTaskLoadingState());
     try {
       var result = await TasksRepo().deleteTask(id: id);
@@ -117,7 +117,7 @@ class EditTaskCubit extends Cubit<EditTaskState> {
     }
   }
 
-  void markTaskAsDone(int id) async {
+  void markTaskAsDone(String id) async {
     emit(EditTaskLoadingState());
     try {
       if (group == null) {

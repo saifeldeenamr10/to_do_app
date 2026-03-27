@@ -34,6 +34,8 @@ class MyTextFormField extends StatelessWidget {
     switch (fieldType) {
       case TextFieldType.username:
         return _usernameTextField();
+      case TextFieldType.email:
+        return _emailTextField();
       case TextFieldType.password:
         return _passwordTextField();
       case TextFieldType.confirmPasword:
@@ -133,6 +135,20 @@ class MyTextFormField extends StatelessWidget {
     );
   }
 
+    Widget _emailTextField() {
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.emailAddress,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      style: AppTextStyles.s14w300,
+      validator: _validateEmail,
+      decoration: _myInputDecoration(
+        prefixIconPath: AppAssets.profile,
+        hint: TranslationKeys.Email.tr,
+      ),
+    );
+  }
+
   /////////////////////////////////////////////////////////////////////////
   // --------------> Decorations <---------------
 
@@ -212,6 +228,15 @@ class MyTextFormField extends StatelessWidget {
     return null;
   }
 
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return TranslationKeys.Fieldisrequired.tr;
+    } else if (!GetUtils.isEmail(value)) {
+      return "Please enter a valid email";
+    }
+    return null;
+  }
+
   String? _noValidation(String? value) {
     if (value == null || value.isEmpty) {
       return TranslationKeys.Fieldisrequired.tr;
@@ -222,6 +247,7 @@ class MyTextFormField extends StatelessWidget {
 
 enum TextFieldType {
   username,
+  email,
   password,
   confirmPasword,
   taskTitle,

@@ -11,7 +11,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   static LoginCubit get(context) => BlocProvider.of(context);
 
-  TextEditingController usernameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool visibality = true;
@@ -32,7 +32,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     UserRepo userRepo = UserRepo();
     var result = await userRepo.login(
-      username: usernameController.text,
+      email: emailController.text,
       password: passwordController.text,
     );
 

@@ -75,7 +75,7 @@ class AddTaskCubit extends Cubit<AddTaskState> {
         task: TaskModel(
           title: titleController.text,
           description: descriptionController.text,
-          id: DateTime.now().millisecondsSinceEpoch,
+          id: '', // Firestore will generate this
           taskState: TaskStatus.inProgress,
           taskType: taskGroup,
           endTime: endDate,
@@ -88,17 +88,6 @@ class AddTaskCubit extends Cubit<AddTaskState> {
           emit(AddTaskError(errorMessage: error));
         },
         (success) {
-          tasksRepo.tasks.add(
-            TaskModel(
-              title: titleController.text,
-              description: descriptionController.text,
-              id: DateTime.now().millisecondsSinceEpoch,
-              taskState: TaskStatus.inProgress,
-              taskType: taskGroup,
-              endTime: endDate,
-              imageFile: imageFile,
-            ),
-          );
           emit(AddTaskSuccess());
         },
       );

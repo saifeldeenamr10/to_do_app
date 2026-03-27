@@ -35,6 +35,7 @@ abstract class TranslationKeys {
   static const Username = "Username";
   static const ConfirmPassword = "Confirm Password";
   static const Password = "Password";
+  static const Email = "Email";
   static const Pleaseselectanoption = "Please select an option";
   static const Passwordisrequired = "Password is required'";
   static const Passwordnotmatched = "Password not matched";
